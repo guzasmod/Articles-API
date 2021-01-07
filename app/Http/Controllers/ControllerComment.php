@@ -12,6 +12,13 @@ use App\Http\Resources\Comment as CommentResource;
 
 class ControllerComment extends Controller
 {
+    public function __construct()
+    {
+        //$this->middleware('auth.role:admin', ['only' => ['blockUser']]);
+       // $this->middleware('auth.role:manager', ['only' => ['destory']]);
+        $this->middleware('auth.role:manager,user,admin', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -106,8 +113,15 @@ class ControllerComment extends Controller
             return response()->json(["message" => "Comment not found!"], 404);
         }
 
-        $komentaras->update($request->all());
-        return response()->json($komentaras, 200);
+        if(auth()->user()->email == Komentaras::find($id)->email || auth()->user()->role == "manager" || auth()->user()->role == "admin"){
+            $komentaras->update($request->all());
+            return new CommentResource($komentaras);
+        } else {
+            return response()->json(["message" => "You don't have permission to update this comment"], 404);
+        }
+
+       // $komentaras->update($request->all());
+       // return response()->json($komentaras, 200);
     }
 
     /**
@@ -124,8 +138,14 @@ class ControllerComment extends Controller
             return response()->json(["message" => "Comment not found!"], 404);
         }
 
-        $komentaras->delete();
-        //return response()->json(null, 204);
-        return new CommentResource($komentaras);
+        if(auth()->user()->email == Komentaras::find($id)->email || auth()->user()->role == "manager" || auth()->user()->role == "admin"){
+            $komentaras->delete();
+            return new CommentResource($komentaras);
+        } else {
+            return response()->json(["message" => "You don't have permission to delete this comment"], 404);
+        }
+
+       // $komentaras->delete();
+       // return new CommentResource($komentaras);
     }
 }

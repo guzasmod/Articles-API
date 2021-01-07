@@ -12,6 +12,13 @@ use App\Http\Resources\Post as PostResource;
 
 class ControllerPost extends Controller
 {
+
+    public function __construct()
+    {
+        //$this->middleware('auth.role:admin', ['only' => ['blockUser']]);
+       // $this->middleware('auth.role:manager', ['only' => ['destory']]);
+        $this->middleware('auth.role:manager,user,admin', ['except' => ['index', 'show']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -23,10 +30,19 @@ class ControllerPost extends Controller
         //return response()->json(Straipsnis::get(), 200);
 
         
-        $straipsniai = Straipsnis::orderBy('sukurimo_data', 'desc')->paginate(5);
+      //  $straipsniai = Straipsnis::orderBy('sukurimo_data', 'desc')->paginate(5);
+
+        $straipsniai = Straipsnis::when(request()->input('category'), function ($query) {
+            $query->whereHas('category', function ($query) {
+                $query->where('id', request()->input('category'));
+            });
+        })
+        ->paginate(6);
 
         //return collection of articles as a resource
         return PostResource::collection($straipsniai);
+
+       // return new PostResource($straipsniai);
     }
 
     /**
@@ -49,7 +65,7 @@ class ControllerPost extends Controller
     {
         $rules = [
             'pavadinimas' => 'required|min:3',
-            'turinys' => 'required',
+            'turinys' => 'required|min:6',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -109,8 +125,15 @@ class ControllerPost extends Controller
             return response()->json(["message" => "Record not found!"], 404);
         }
 
-        $straipsnis->update($request->all());
-        return response()->json($straipsnis, 200);
+        if(auth()->user()->id == Straipsnis::find($id)->user_id || auth()->user()->role == "manager" || auth()->user()->role == "admin"){
+            $straipsnis->update($request->all());
+            return response()->json($straipsnis, 200);
+        } else {
+            return response()->json(["message" => "You don't have permission to update the post"], 404);
+        }
+
+        //$straipsnis->update($request->all());
+        //return response()->json($straipsnis, 200);
     }
 
     /**
@@ -127,8 +150,15 @@ class ControllerPost extends Controller
             return response()->json(["message" => "Record not found!"], 404);
         }
 
-        $straipsnis->delete();
-        //return response()->json($straipsnis, 204);
-        return new PostResource($straipsnis);
+        if(auth()->user()->id == Straipsnis::find($id)->user_id || auth()->user()->role == "manager" || auth()->user()->role == "admin"){
+            $straipsnis->delete();
+            return new PostResource($straipsnis);
+        } else {
+            return response()->json(["message" => "You don't have permission to delete the post"], 404);
+        }
+
+
+      //  $straipsnis->delete();
+      //  return new PostResource($straipsnis);
     }
 }

@@ -26,6 +26,8 @@ class Post extends JsonResource
             'sukurimo_data' => $this->sukurimo_data,
             'fk_Straipsnio_kategorija_id' => $this->fk_Straipsnio_kategorija_id,
             'komentarai' => $this->comments,
+            'user_id' => $this->user_id,
+            'photo' => $this->photo,
         ];
         
     }

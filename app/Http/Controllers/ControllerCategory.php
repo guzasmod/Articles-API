@@ -12,6 +12,14 @@ use App\Http\Resources\Category as CategoryResource;
 
 class ControllerCategory extends Controller
 {
+
+    public function __construct()
+    {
+        //$this->middleware('auth.role:admin', ['only' => ['blockUser']]);
+       // $this->middleware('auth.role:manager', ['only' => ['destory']]);
+        $this->middleware('auth.role:manager,admin', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -19,7 +27,8 @@ class ControllerCategory extends Controller
      */
     public function index()
     {
-        $kategorijos = Kategorija::paginate(5);
+        //$kategorijos = Kategorija::paginate(5);
+        $kategorijos = Kategorija::all();
 
         //return collection of articles as a resource
         return CategoryResource::collection($kategorijos);

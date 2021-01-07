@@ -12,6 +12,8 @@ use Validator;
 
 class CommentsControler extends Controller
 {
+
+    
     /**
      * Display a listing of the resource.
      *

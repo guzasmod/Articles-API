@@ -13,6 +13,12 @@ use App\Http\Resources\Comment as CommentResource;
 
 class CategoryPostController extends Controller
 {
+    public function __construct()
+    {
+        //$this->middleware('auth.role:admin', ['only' => ['blockUser']]);
+       // $this->middleware('auth.role:manager', ['only' => ['destory']]);
+        $this->middleware('auth.role:manager,user,admin', ['except' => ['index', 'show']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -131,10 +137,15 @@ class CategoryPostController extends Controller
             return response()->json(["message" => "Post not found!"], 404);
         }
 
+
        if($straipsnis->fk_Straipsnio_kategorija_id == $category_id)
        {
-            $straipsnis->update($request->all());
-            return response()->json($straipsnis, 200);
+            if(auth()->user()->id == Straipsnis::find($id)->user_id || auth()->user()->role == "manager" || auth()->user()->role == "admin"){
+                $straipsnis->update($request->all());
+                return response()->json($straipsnis, 200);
+            } else {
+                return response()->json(["message" => "You don't have permission to update the post"], 404);
+            }
        }
        else {
             return response()->json(["message" => "You don't have permission to update this post!"], 404);
@@ -163,8 +174,12 @@ class CategoryPostController extends Controller
 
         if($straipsnis->fk_Straipsnio_kategorija_id == $category_id)
         {
-             $straipsnis->delete();
-             return response()->json($straipsnis, 200);
+             if(auth()->user()->id == Straipsnis::find($id)->user_id || auth()->user()->role == "manager" || auth()->user()->role == "admin"){
+                $straipsnis->delete();
+                return new PostResource($straipsnis);
+            } else {
+                return response()->json(["message" => "You don't have permission to delete the post"], 404);
+            }
         }
         else {
              return response()->json(["message" => "You don't have permission to delete this post!"], 404);

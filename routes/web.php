@@ -3,30 +3,69 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 
+// Route::get('/vue/{vue_capture?}', function () {
+//     return view('welcome');
+//    })->where('vue_capture', '[\/\w\.-]*');
+
+
+
+Route::get('/{vue?}', function() {
+    return view('welcome');
+})->where('vue', '[\/\w\.-]*');
+
+//cia sita naudojau
+// Route::any('{all}',function(){
+//     return view('welcome');
+// })
+// ->where('all', '^(?!api).*$');
+
+
+
+
+
+// ->where('all', '^(?!storage).*$');
+
+
+
+
+
 /*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
+Route::any('{all}', function () {
+    return view('welcome');})->where(['all' => '.*']);
 */
 
-//Route::view('/', 'home';
 
+
+
+//Route::get('/{any}', function() { return view('welcome'); })->where('any', '.*');
+//Route::view("/{any}", 'welcome')->where('any', '.*');
+//Route::view("/{app?}", 'welcome')->where('app', '.*');
+
+
+
+
+
+
+/*
+Route::get('/vue/{vue_capture?}', function () {
+    return view('welcome');
+})->where('vue_capture', '[\/\w\.-]*');
+*/
+
+//Route::view("/{app?}", 'welcome')->where('app', '.?');
+
+/*
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('straipsniai', 'PostController@postai');
-Route::get('straipsniai/{id}', 'PostController@postByID');
-Route::get('straipsniai', 'PostController@postSave');
-Route::put('straipsniai/{straipsnis}', 'PostController@postUpdate');
-
-Route::get('straipsniai', [PostController::class, 'postai']);
+*/
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+/*
+Route::get('/xd', function () {
+    return view('welcome');
+});
+*/
+
